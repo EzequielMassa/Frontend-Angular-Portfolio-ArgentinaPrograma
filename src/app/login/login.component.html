@@ -1,0 +1,204 @@
+<section class="vh-100 gradient-custom">
+  <div class="container py-0 h-100" [@fadeInDownOnEnter]>
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-dark text-white" style="border-radius: 1rem">
+          <div class="card-body p-2 text-center">
+            <form
+              [formGroup]="form"
+              class="mb-md-5 mt-md-4 pb-2"
+              (ngSubmit)="onLogin()"
+            >
+              <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+              <p class="text-white-50 mb-4">
+                Please enter your login and password!
+              </p>
+
+              <div class="form-outline form-white mb-4">
+                <input
+                  type="text"
+                  id="inputuserName"
+                  class="form-control mb-3"
+                  placeholder="User Name"
+                  required=""
+                  autofocus=""
+                  formControlName="userName"
+                  [ngClass]="{
+                    'is-invalid': userName?.errors && userName?.touched,
+                    'is-valid': !userName?.errors && userName?.touched
+                  }"
+                />
+                <div *ngIf="userName?.errors && userName?.touched">
+                  <p *ngIf="userName?.hasError('required')" class="text-danger">
+                    El nombre de usuario es requerido
+                  </p>
+                  <p *ngIf="userName?.errors?.minlength" class="text-danger">
+                    El nombre de usuario debe contener 4 o mas caracteres
+                  </p>
+                </div>
+                <label class="form-label" for="inputuserName">User Name</label>
+              </div>
+
+              <div class="form-outline form-white mb-4">
+                <input
+                  mb-3
+                  type="password"
+                  id="inputPassword"
+                  class="form-control"
+                  placeholder="Password"
+                  required=""
+                  formControlName="pass"
+                  [ngClass]="{
+                    'is-invalid': pass?.errors && pass?.touched,
+                    'is-valid': !pass?.errors && pass?.touched
+                  }"
+                />
+                <div *ngIf="pass?.errors && pass?.touched">
+                  <p *ngIf="pass?.hasError('required')" class="text-danger">
+                    La contraseña es requerida
+                  </p>
+                  <p *ngIf="pass?.errors?.minlength" class="text-danger">
+                    La contraseña debe ser de 8 o mas caracteres
+                  </p>
+                </div>
+                <label class="form-label" for="inputPassword">Password</label>
+              </div>
+
+              <button class="btn btn-outline-light btn-lg px-5" type="submit">
+                Login
+              </button>
+            </form>
+
+            <div>
+              <p class="mb-0">
+                Don't have an account?
+                <a
+                  class="text-white-50 fw-bold"
+                  (click)="openVerticallyCentered(contenido)"
+                  >Sign Up</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #contenido let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Crear Usuario</h4>
+      <button class="close" aria-label="close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formUser" class="form-signin">
+        <h6 class="h3 mb-3 font-weight-normal">
+          El * indica que es obligatorio
+        </h6>
+
+        <label for="inputNombre">*Nombre</label>
+        <input
+          type="text"
+          id="inputNombre"
+          class="form-control my-2"
+          placeholder="Ingrese su nombre"
+          required=""
+          autofocus=""
+          formControlName="nombre"
+          [ngClass]="{
+            'is-invalid': nombre?.errors,
+            'is-valid': !nombre?.errors
+          }"
+        />
+        <div *ngIf="nombre?.errors">
+          <p *ngIf="nombre?.hasError('required')" class="text-danger">
+            El nombre de usuario es requrido
+          </p>
+          <p *ngIf="nombre?.errors?.minlength" class="text-danger">
+            El nombre debe ser de 4 o mas caracteres
+          </p>
+        </div>
+        <label for="inputnewUserName">*User Name</label>
+        <input
+          type="text"
+          id="inputnewUserName"
+          class="form-control my-2"
+          placeholder=""
+          required=""
+          autofocus=""
+          formControlName="newUserName"
+          [ngClass]="{
+            'is-invalid': newUserName?.errors,
+            'is-valid': !newUserName?.errors
+          }"
+        />
+        <div *ngIf="newUserName?.errors">
+          <p *ngIf="newUserName?.hasError('required')" class="text-danger">
+            El nombre de usuario es requrido
+          </p>
+        </div>
+
+        <label for="inputEmail">*Email</label>
+        <input
+          type="email"
+          id="inputEmail"
+          class="form-control my-2"
+          placeholder="Ingrese su email"
+          required=""
+          autofocus=""
+          formControlName="email"
+          [ngClass]="{
+            'is-invalid': email?.errors,
+            'is-valid': !email?.errors
+          }"
+        />
+        <div *ngIf="email?.errors">
+          <p *ngIf="email?.hasError('required')" class="text-danger">
+            El email es requrido
+          </p>
+          <p *ngIf="email?.hasError('email')" class="text-danger">
+            El formato del email es incorrecto
+          </p>
+        </div>
+
+        <label for="inputNewPassword">*Password</label>
+        <input
+          type="password"
+          id="inputNewPassword"
+          class="form-control my-2"
+          placeholder=""
+          required=""
+          autofocus=""
+          formControlName="newPass"
+          [ngClass]="{
+            'is-invalid': newPass?.errors,
+            'is-valid': !newPass?.errors
+          }"
+        />
+        <div *ngIf="newPass?.errors">
+          <p *ngIf="newPass?.hasError('required')" class="text-danger">
+            El password es requrido
+          </p>
+          <p *ngIf="newPass?.errors?.minlength" class="text-danger">
+            La contraseña debe ser de 8 o mas caracteres
+          </p>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-success"
+        name="submit"
+        (click)="crearUsuario()"
+      >
+        Guardar
+      </button>
+      <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+        Cancelar
+      </button>
+    </div>
+  </ng-template>
+</section>

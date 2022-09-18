@@ -1,0 +1,252 @@
+<div
+  id="lead"
+  [ngStyle]="{
+    'background-image': 'url(' + imgBack + ')'
+  }"
+>
+  <div class="banner__profile--img" [@zoomInRightOnEnter]>
+    <img [src]="imgProfile" alt="imagen perfil usuario" />
+  </div>
+
+  <div class="controller__container--profile-img" *ngIf="isLogged">
+    <button
+      class="controllers__btn"
+      (click)="openVerticallyCentered(contenido)"
+    >
+      <i id="banner--edit--btn" class="fa-solid fa-pen"></i>
+    </button>
+  </div>
+
+  <div id="lead-content" *ngIf="usuarioInfo" [@fadeInOnEnter]>
+    <h1>
+      {{ usuarioInfo.getNombre() | titlecase }}
+      {{ usuarioInfo.getApellido() | titlecase }}
+    </h1>
+    <h2 *ngIf="usuarioInfo">{{ usuarioInfo.getOcupacion() | titlecase }}</h2>
+    <h3 *ngIf="usuarioInfo">{{ usuarioInfo.getUbicacion() | titlecase }}</h3>
+    <a
+      [href]="'https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=' + Useremail"
+      target="_blank"
+      class="descripcion"
+      *ngIf="usuarioInfo"
+    >
+      {{ Useremail }}
+    </a>
+    <button
+      class="btn-rounded-white"
+      (click)="getDownloableCv()"
+      [@rubberBandOnEnter]
+    >
+      Download Cv
+    </button>
+    <div class="controller__container--profile-cv" *ngIf="isLogged">
+      <button class="controllers__btn" (click)="openFileForm(fileContent)">
+        <i id="banner--edit--btn" class="fa-solid fa-pen"></i>
+      </button>
+    </div>
+  </div>
+
+  <div id="lead-overlay"></div>
+
+  <div id="lead-down">
+    <span>
+      <i
+        class="fa fa-chevron-down"
+        aria-hidden="true"
+        [routerLink]="['/' + nombreUsuario]"
+        fragment="footer"
+        skipLocationChange
+      ></i>
+    </span>
+  </div>
+</div>
+
+<ng-template #fileContent let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Upload Cv</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formUpload" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">Tamaño maximo del archivo 10Mb</h6>
+      <label for="inputFile">Seleccione el archivo</label>
+      <input
+        type="file"
+        id="inputFile"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="file"
+        (change)="handleFile($event)"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="uploadCv()"
+    >
+      Upload
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #contenido let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Presentacion</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formBanner" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputNombre">*Nombre</label>
+      <input
+        type="text"
+        id="inputNombre"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="name"
+        [ngClass]="{
+          'is-invalid': name?.errors,
+          'is-valid': !name?.errors
+        }"
+      />
+      <div *ngIf="name?.errors">
+        <p *ngIf="name?.hasError('required')" class="text-danger">
+          El nombre es requerido
+        </p>
+
+        <p *ngIf="name?.errors?.minlength" class="text-danger">
+          El nombre debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="name?.errors?.maxlength" class="text-danger">
+          El nombre debe contener 100 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputApellido">*Apellido</label>
+      <input
+        type="text"
+        id="inputApellido"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="lastName"
+        [ngClass]="{
+          'is-invalid': lastName?.errors,
+          'is-valid': !lastName?.errors
+        }"
+      />
+      <div *ngIf="lastName?.errors">
+        <p *ngIf="lastName?.hasError('required')" class="text-danger">
+          El Apellido es requerido
+        </p>
+
+        <p *ngIf="lastName?.errors?.minlength" class="text-danger">
+          El apellido debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="lastName?.errors?.maxlength" class="text-danger">
+          El apellido debe contener 100 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUbicacion">*Ubicacion</label>
+      <input
+        type="text"
+        id="inputUbicacion"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="location"
+        [ngClass]="{
+          'is-invalid': location?.errors,
+          'is-valid': !location?.errors
+        }"
+      />
+      <div *ngIf="location?.errors">
+        <p *ngIf="location?.hasError('required')" class="text-danger">
+          La ubicacion es requrida
+        </p>
+
+        <p *ngIf="location?.errors?.minlength" class="text-danger">
+          La ubicacion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="location?.errors?.maxlength" class="text-danger">
+          La ubicacion debe contener 100 caracteres como maximo
+        </p>
+      </div>
+
+      <label for="inputPuesto">*Puesto</label>
+      <input
+        type="text"
+        id="inputPuesto"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="position"
+        [ngClass]="{
+          'is-invalid': position?.errors,
+          'is-valid': !position?.errors
+        }"
+      />
+      <div *ngIf="position?.errors">
+        <p *ngIf="position?.hasError('required')" class="text-danger">
+          El puesto es requerido
+        </p>
+
+        <p *ngIf="position?.errors?.minlength" class="text-danger">
+          El puesto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="puesto?.errors?.maxlength" class="text-danger">
+          El puesto debe contener 100 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputimgProf">URL Imagen Perfil</label>
+      <input
+        type="text"
+        id="inputimgProf"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="imgProf"
+      />
+      <label for="inputImgBg">URL Imagen Background</label>
+      <input
+        type="text"
+        id="inputImgBg"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="imgBg"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="modificarUsuario()"
+    >
+      Guardar
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

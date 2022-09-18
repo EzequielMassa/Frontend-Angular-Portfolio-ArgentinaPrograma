@@ -1,0 +1,327 @@
+<div id="projects" class="background-alt">
+  <h2 class="heading">Projects</h2>
+  <div class="container">
+    <div class="row">
+      <div
+        class="project shadow-large"
+        #prjData
+        *ngFor="let project of projects"
+        [attr.data-id]="project.getId()"
+      >
+        <div class="project-image" *ngIf="project.getImgProject()">
+          <img [attr.src]="project.getImgProject() | safe" />
+        </div>
+
+        <div>
+          <div class="project-info">
+            <h3>{{ project.getNombre() | titlecase }}</h3>
+            <p>
+              {{ project.getDescripcion() }}
+            </p>
+            <a
+              [href]="project.getUrl_project() | safe"
+              target="_blank"
+              class="btn-black"
+              >View Project</a
+            >
+          </div>
+          <div class="controllers__container" *ngIf="isLogged">
+            <button
+              class="controllers__btn"
+              (click)="obtenerPrj(contenidoEdit, prjData)"
+            >
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button
+              class="controllers__btn"
+              (click)="openPrjModal(popupContent, prjData)"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="controllers__container--add" *ngIf="isLogged">
+    <button class="controllers__btn" (click)="crearPrjForm(contenido)">
+      <i id="project--btn--add" class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+</div>
+<!-- End #projects -->
+
+<!-- popup -->
+<ng-template #popupContent let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title" id="modalPrj">CONFIRM DELETE</h5>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to proceed? this will delete this item
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      name="dismiss"
+      (click)="modal.close()"
+    >
+      Cancel
+    </button>
+    <button type="button" class="btn btn-danger" (click)="eliminarPrj(prjData)">
+      Delete
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal -->
+<ng-template #contenido let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Crear Proyecto</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formProj" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputNombre">*Nombre</label>
+      <input
+        type="text"
+        id="inputNombre"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="nombre"
+        [ngClass]="{
+          'is-invalid': nombre?.errors,
+          'is-valid': !nombre?.errors
+        }"
+      />
+      <div *ngIf="nombre?.errors">
+        <p *ngIf="nombre?.hasError('required')" class="text-danger">
+          El nombre del proyecto es requerido
+        </p>
+
+        <p *ngIf="nombre?.errors?.minlength" class="text-danger">
+          El nombre del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="nombre?.errors?.maxlength" class="text-danger">
+          El nombre del proyecto debe contener 50 caracteres como maximo
+        </p>
+      </div>
+
+      <label for="inputDescripcion">*Descripcion</label>
+      <textarea
+        class="form-control"
+        id="inputDescripcion"
+        rows="5"
+        formControlName="descripcion"
+        [ngClass]="{
+          'is-invalid': descripcion?.errors,
+          'is-valid': !descripcion?.errors
+        }"
+      ></textarea>
+      <div *ngIf="descripcion?.errors">
+        <p *ngIf="descripcion?.hasError('required')" class="text-danger">
+          La descripcion del proyecto es requerida
+        </p>
+
+        <p *ngIf="descripcion?.errors?.minlength" class="text-danger">
+          La descripcion del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="descripcion?.errors?.maxlength" class="text-danger">
+          La descripcion del proyecto debe contener 800 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUrlProject">*Url del proyecto</label>
+      <input
+        type="text"
+        id="inputUrlProject"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlProject"
+        [ngClass]="{
+          'is-invalid': urlProject?.errors,
+          'is-valid': !urlProject?.errors
+        }"
+      />
+      <div *ngIf="urlProject?.errors">
+        <p *ngIf="urlProject?.hasError('required')" class="text-danger">
+          La url del proyecto es requerida
+        </p>
+
+        <p *ngIf="urlProject?.errors?.minlength" class="text-danger">
+          La url del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="urlProject?.errors?.maxlength" class="text-danger">
+          La url del proyecto debe contener 200 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputImgProject">URL Imagen del proyecto</label>
+      <input
+        type="text"
+        id="inputImgProject"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="imgProject"
+        [ngClass]="{
+          'is-invalid': imgProject?.errors,
+          'is-valid': !imgProject?.errors
+        }"
+      />
+      <div *ngIf="imgProject?.errors">
+        <p *ngIf="imgProject?.errors?.maxlength" class="text-danger">
+          La urlde la imagen del proyecto debe contener 200 caracteres como
+          maximo
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="crearProject()"
+    >
+      Crear Proyecto
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal edit -->
+
+<ng-template #contenidoEdit let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Proyecto</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formProjEdit" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputNombreEdit">*Nombre</label>
+      <input
+        type="text"
+        id="inputNombreEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="nombreEdit"
+        [ngClass]="{
+          'is-invalid': nombreEdit?.errors,
+          'is-valid': !nombreEdit?.errors
+        }"
+      />
+      <div *ngIf="nombreEdit?.errors">
+        <p *ngIf="nombreEdit?.hasError('required')" class="text-danger">
+          El nombre del proyecto es requerido
+        </p>
+
+        <p *ngIf="nombreEdit?.errors?.minlength" class="text-danger">
+          El nombre del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="nombreEdit?.errors?.maxlength" class="text-danger">
+          El nombre del proyecto debe contener 50 caracteres como maximo
+        </p>
+      </div>
+
+      <label for="inputDescripcionEdit">*Descripcion</label>
+      <textarea
+        class="form-control"
+        id="inputDescripcionEdit"
+        rows="5"
+        formControlName="descripcionEdit"
+        [ngClass]="{
+          'is-invalid': descripcionEdit?.errors,
+          'is-valid': !descripcionEdit?.errors
+        }"
+      ></textarea>
+      <div *ngIf="descripcionEdit?.errors">
+        <p *ngIf="descripcionEdit?.hasError('required')" class="text-danger">
+          La descripcion del proyecto es requerida
+        </p>
+
+        <p *ngIf="descripcionEdit?.errors?.minlength" class="text-danger">
+          La descripcion del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="descripcionEdit?.errors?.maxlength" class="text-danger">
+          La descripcion del proyecto debe contener 800 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUrlProjectEdit">*Url del proyecto</label>
+      <input
+        type="text"
+        id="inputUrlProjectEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlProjectEdit"
+        [ngClass]="{
+          'is-invalid': urlProjectEdit?.errors,
+          'is-valid': !urlProjectEdit?.errors
+        }"
+      />
+      <div *ngIf="urlProjectEdit?.errors">
+        <p *ngIf="urlProjectEdit?.hasError('required')" class="text-danger">
+          La url del proyecto es requerida
+        </p>
+
+        <p *ngIf="urlProjectEdit?.errors?.minlength" class="text-danger">
+          La url del proyecto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="urlProjectEdit?.errors?.maxlength" class="text-danger">
+          La url del proyecto debe contener 200 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputImgProjectEdit">URL Imagen del proyecto</label>
+      <input
+        type="text"
+        id="inputImgProjectEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="imgProjectEdit"
+        [ngClass]="{
+          'is-invalid': imgProjectEdit?.errors,
+          'is-valid': !imgProjectEdit?.errors
+        }"
+      />
+      <div *ngIf="imgProjectEdit?.errors">
+        <p *ngIf="imgProjectEdit?.errors?.maxlength" class="text-danger">
+          La urlde la imagen del proyecto debe contener 200 caracteres como
+          maximo
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="modificarProject()"
+    >
+      Guardar Proyecto
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

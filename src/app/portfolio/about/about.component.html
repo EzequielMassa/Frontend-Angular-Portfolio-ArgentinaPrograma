@@ -1,0 +1,65 @@
+<div id="about">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2 class="heading">About Me</h2>
+      </div>
+      <div class="col-md-8">
+        <p *ngIf="acerca">
+          {{ acerca.getDescripcion() }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="controllers__container--about" *ngIf="isLogged">
+    <button
+      class="controllers__btn"
+      (click)="openVerticallyCentered(contenido)"
+    >
+      <i class="fa-solid fa-pen"></i>
+    </button>
+  </div>
+</div>
+
+<!-- modal  -->
+<ng-template #contenido let-modal class="template">
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Descripcion</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formAbout" class="form-signin">
+      <div class="form-group">
+        <label for="inputAbout">*Maximo 600 caracteres</label>
+        <textarea
+          class="form-control"
+          id="inputAbout"
+          rows="5"
+          formControlName="about"
+          [ngClass]="{
+            'is-invalid': about?.errors,
+            'is-valid': !about?.errors
+          }"
+        ></textarea>
+      </div>
+      <div *ngIf="about?.errors">
+        <p *ngIf="about?.hasError('required')" class="text-danger">
+          La descripcion es requerida
+        </p>
+
+        <p *ngIf="about?.errors?.minlength" class="text-danger">
+          La descripcion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="about?.errors?.maxlength" class="text-danger">
+          La descripcion debe contener 600 caracteres como maximo
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" (click)="modificarAcerca()">Guardar</button>
+    <button class="btn btn-danger" (click)="modal.close()">Cancelar</button>
+  </div>
+</ng-template>

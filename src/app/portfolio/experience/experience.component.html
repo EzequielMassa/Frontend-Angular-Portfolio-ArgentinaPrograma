@@ -1,0 +1,499 @@
+<div id="experience" class="background-alt">
+  <h2 class="heading">Experience</h2>
+  <div id="experience-timeline">
+    <div
+      class="list__item"
+      #expData
+      *ngFor="let experiencia of experiencias"
+      [attr.data-id]="experiencia.getId()"
+      [style.background-image]="
+        experiencia.getUrl_img_empresa() == undefined ||
+        experiencia.getUrl_img_empresa() == null ||
+        experiencia.getUrl_img_empresa() == ' '
+          ? 'url(' + url_empresa_img_default + ')'
+          : 'url(' + experiencia.getUrl_img_empresa() + ')'
+      "
+      [style.background-repeat]="'no-repeat'"
+      [style.background-position]="' left 20px top 10px'"
+      [style.background-size]="' 80px'"
+    >
+      <h3>
+        {{ experiencia.getEmpresa() | titlecase }}
+      </h3>
+      <h4>
+        {{ experiencia.getPuesto() | titlecase }} -
+        {{ experiencia.getExpType().type }}
+      </h4>
+      <h5>
+        {{ experiencia.getFecha_inicio() | date: "dd-MM-yyyy" }} -
+        {{ experiencia.getFecha_fin() | date: "dd-MM-yyyy" }}
+        <br />
+        {{ experiencia.getUbicacion() | titlecase }}
+      </h5>
+      <p>
+        {{ experiencia.getRol() }}
+      </p>
+      <div class="controllers__container" *ngIf="isLogged">
+        <button
+          class="controllers__btn"
+          (click)="obtenerExp(contenidoEdit, expData)"
+        >
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button
+          class="controllers__btn"
+          (click)="openExpModal(popupContent, expData)"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="controllers__container--add" *ngIf="isLogged">
+    <button class="controllers__btn" (click)="crearExpForm(contenido)">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+</div>
+
+<!-- End #experience -->
+
+<!-- popup -->
+<ng-template #popupContent let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title" id="modalExp">CONFIRM DELETE</h5>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to proceed? this will delete this item
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      name="dismiss"
+      (click)="modal.close()"
+    >
+      Cancel
+    </button>
+    <button type="button" class="btn btn-danger" (click)="eliminarExp(expData)">
+      Delete
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal -->
+
+<ng-template #contenido let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Crear Experiencia</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formExp" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputPuesto">*Puesto</label>
+      <input
+        type="text"
+        id="inputPuesto"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="puesto"
+        [ngClass]="{
+          'is-invalid': puesto?.errors,
+          'is-valid': !puesto?.errors
+        }"
+      />
+      <div *ngIf="puesto?.errors">
+        <p *ngIf="puesto?.hasError('required')" class="text-danger">
+          El puesto es requerido
+        </p>
+
+        <p *ngIf="puesto?.errors?.minlength" class="text-danger">
+          El puesto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="puesto?.errors?.maxlength" class="text-danger">
+          El puesto debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputEmpresa">*Empresa</label>
+      <input
+        type="text"
+        id="inputEmpresa"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="empresa"
+        [ngClass]="{
+          'is-invalid': empresa?.errors,
+          'is-valid': !empresa?.errors
+        }"
+      />
+      <div *ngIf="empresa?.errors">
+        <p *ngIf="empresa?.hasError('required')" class="text-danger">
+          La empresa es requerida
+        </p>
+
+        <p *ngIf="empresa?.errors?.minlength" class="text-danger">
+          La empresa debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="empresa?.errors?.maxlength" class="text-danger">
+          La empresa debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <!-- tipo -->
+      <label for="expTipo">*Tipo de Expericencia</label>
+      <select
+        class="form-select"
+        aria-label="Default select example"
+        formControlName="expTipo"
+        [ngClass]="{
+          'is-invalid': expTipo?.errors,
+          'is-valid': !expTipo?.errors
+        }"
+      >
+        <option value="{{ tipoExperiencias[0].idExpType }}" selected>
+          {{ tipoExperiencias[0].type }}
+        </option>
+        <option value="{{ tipoExperiencias[1].idExpType }}">
+          {{ tipoExperiencias[1].type }}
+        </option>
+        <option value="{{ tipoExperiencias[2].idExpType }}">
+          {{ tipoExperiencias[2].type }}
+        </option>
+        <div *ngIf="expTipo?.errors">
+          <p *ngIf="expTipo?.hasError('required')" class="text-danger">
+            La tipo de experiencia es requerido
+          </p>
+        </div>
+      </select>
+      <!-- fin tipo -->
+      <label for="inputFechaInicio">*Fecha de inicio</label>
+      <input
+        type="date"
+        id="inputFechaInicio"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaInicio"
+        [ngClass]="{
+          'is-invalid': fechaInicio?.errors,
+          'is-valid': !fechaInicio?.errors
+        }"
+      />
+      <div *ngIf="fechaInicio?.errors">
+        <p *ngIf="fechaInicio?.hasError('required')" class="text-danger">
+          La fecha de inicio es requrida
+        </p>
+      </div>
+      <label for="inputFechaFin">*Fecha fin</label>
+      <input
+        type="date"
+        id="inputFechaFin"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaFin"
+        [ngClass]="{
+          'is-invalid': fechaFin?.errors,
+          'is-valid': !fechaFin?.errors
+        }"
+      />
+
+      <div *ngIf="fechaFin?.errors">
+        <p *ngIf="fechaFin?.hasError('required')" class="text-danger">
+          La fecha de fin es requrida
+        </p>
+      </div>
+
+      <label for="inputRol">*Tareas desempeñadas</label>
+      <textarea
+        class="form-control"
+        id="inputRol"
+        rows="5"
+        formControlName="rol"
+        [ngClass]="{
+          'is-invalid': rol?.errors,
+          'is-valid': !rol?.errors
+        }"
+      ></textarea>
+      <div *ngIf="rol?.errors">
+        <p *ngIf="rol?.hasError('required')" class="text-danger">
+          La descripcion es requerida
+        </p>
+
+        <p *ngIf="rol?.errors?.minlength" class="text-danger">
+          La descripcion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="rol?.errors?.maxlength" class="text-danger">
+          La descripcion debe contener 600 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUbicacion">*Ubicacion</label>
+      <input
+        type="text"
+        id="inputUbicacion"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="ubicacion"
+        [ngClass]="{
+          'is-invalid': ubicacion?.errors,
+          'is-valid': !ubicacion?.errors
+        }"
+      />
+      <div *ngIf="ubicacion?.errors">
+        <p *ngIf="ubicacion?.hasError('required')" class="text-danger">
+          La ubicacion es requerida
+        </p>
+
+        <p *ngIf="ubicacion?.errors?.minlength" class="text-danger">
+          La ubicacion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="ubicacion?.errors?.maxlength" class="text-danger">
+          La ubicacion debe contener 100 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUrlImgEmpresa">URL imagen empresa</label>
+      <input
+        type="text"
+        id="inputUrlImgEmpresa"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlImgEmp"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="crearExperiencia()"
+    >
+      Crear experiencia
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal edit -->
+
+<ng-template #contenidoEdit let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Experiencia</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formExpEdit" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputPuestoEdit">*Puesto</label>
+      <input
+        type="text"
+        id="inputPuestoEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="puestoEdit"
+        [ngClass]="{
+          'is-invalid': puestoEdit?.errors,
+          'is-valid': !puestoEdit?.errors
+        }"
+      />
+      <div *ngIf="puestoEdit?.errors">
+        <p *ngIf="puestoEdit?.hasError('required')" class="text-danger">
+          El puesto es requerido
+        </p>
+
+        <p *ngIf="puestoEdit?.errors?.minlength" class="text-danger">
+          El puesto debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="puestoEdit?.errors?.maxlength" class="text-danger">
+          El puesto debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputEmpresaEdit">*Empresa</label>
+      <input
+        type="text"
+        id="inputEmpresaEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="empresaEdit"
+        [ngClass]="{
+          'is-invalid': empresaEdit?.errors,
+          'is-valid': !empresaEdit?.errors
+        }"
+      />
+      <div *ngIf="empresaEdit?.errors">
+        <p *ngIf="empresaEdit?.hasError('required')" class="text-danger">
+          La empresa es requerida
+        </p>
+
+        <p *ngIf="empresaEdit?.errors?.minlength" class="text-danger">
+          La empresa debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="empresaEdit?.errors?.maxlength" class="text-danger">
+          La empresa debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <!-- tipo -->
+      <label for="expTipoEdit">*Tipo de Expericencia</label>
+      <select
+        class="form-select"
+        aria-label="Default select example"
+        formControlName="expTipoEdit"
+        [ngClass]="{
+          'is-invalid': expTipoEdit?.errors,
+          'is-valid': !expTipoEdit?.errors
+        }"
+      >
+        <option value="{{ tipoExperiencias[0].idExpType }}" selected>
+          {{ tipoExperiencias[0].type }}
+        </option>
+        <option value="{{ tipoExperiencias[1].idExpType }}">
+          {{ tipoExperiencias[1].type }}
+        </option>
+        <option value="{{ tipoExperiencias[2].idExpType }}">
+          {{ tipoExperiencias[2].type }}
+        </option>
+        <div *ngIf="expTipoEdit?.errors">
+          <p *ngIf="expTipoEdit?.hasError('required')" class="text-danger">
+            La tipo de experiencia es requerido
+          </p>
+        </div>
+      </select>
+      <!-- fin tipo -->
+      <label for="inputFechaInicioEdit">*Fecha de inicio</label>
+      <input
+        type="date"
+        id="inputFechaInicioEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaInicioEdit"
+        [ngClass]="{
+          'is-invalid': fechaInicioEdit?.errors,
+          'is-valid': !fechaInicioEdit?.errors
+        }"
+      />
+      <div *ngIf="fechaInicioEdit?.errors">
+        <p *ngIf="fechaInicioEdit?.hasError('required')" class="text-danger">
+          La fecha de inicio es requrida
+        </p>
+      </div>
+      <label for="inputFechaFinEdit">*Fecha fin</label>
+      <input
+        type="date"
+        id="inputFechaFinEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaFinEdit"
+        [ngClass]="{
+          'is-invalid': fechaFinEdit?.errors,
+          'is-valid': !fechaFinEdit?.errors
+        }"
+      />
+
+      <div *ngIf="fechaFinEdit?.errors">
+        <p *ngIf="fechaFinEdit?.hasError('required')" class="text-danger">
+          La fecha de fin es requrida
+        </p>
+      </div>
+
+      <label for="inputRolEdit">*Tareas desempeñadas</label>
+      <textarea
+        class="form-control"
+        id="inputRolEdit"
+        rows="5"
+        formControlName="rolEdit"
+        [ngClass]="{
+          'is-invalid': rolEdit?.errors,
+          'is-valid': !rolEdit?.errors
+        }"
+      ></textarea>
+      <div *ngIf="rolEdit?.errors">
+        <p *ngIf="rolEdit?.hasError('required')" class="text-danger">
+          La descripcion es requerida
+        </p>
+
+        <p *ngIf="rolEdit?.errors?.minlength" class="text-danger">
+          La descripcion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="rolEdit?.errors?.maxlength" class="text-danger">
+          La descripcion debe contener 600 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUbicacionEdit">*Ubicacion</label>
+      <input
+        type="text"
+        id="inputUbicacionEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="ubicacionEdit"
+        [ngClass]="{
+          'is-invalid': ubicacionEdit?.errors,
+          'is-valid': !ubicacionEdit?.errors
+        }"
+      />
+      <div *ngIf="ubicacionEdit?.errors">
+        <p *ngIf="ubicacionEdit?.hasError('required')" class="text-danger">
+          La ubicacion es requerida
+        </p>
+
+        <p *ngIf="ubicacionEdit?.errors?.minlength" class="text-danger">
+          La ubicacion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="ubicacionEdit?.errors?.maxlength" class="text-danger">
+          La ubicacion debe contener 100 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputUrlImgEmpresaEdit">URL imagen empresa</label>
+      <input
+        type="text"
+        id="inputUrlImgEmpresaEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlImgEmpEdit"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="modificarExperiencia()"
+    >
+      Guardar experiencia
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

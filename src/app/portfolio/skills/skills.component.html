@@ -1,0 +1,223 @@
+<div id="skills">
+  <h2 class="heading">Skills</h2>
+  <ul>
+    <li
+      #sklData
+      class="skill__item__container"
+      *ngFor="let skill of skills"
+      [attr.data-id]="skill.getId()"
+    >
+      {{ skill.getNombre() | uppercase }}
+      <div class="progress">
+        <div
+          class="progress-bar bg-success"
+          role="progressbar"
+          [style.width.%]="skill.getAvance()"
+          [attr.aria-valuenow]="skill.getAvance()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+      <div class="controllers__container--skills" *ngIf="isLogged">
+        <button
+          class="controllers__btn"
+          (click)="obtenerSkill(contenidoEdit, sklData)"
+        >
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button
+          class="controllers__btn"
+          (click)="openSklModal(popupContent, sklData)"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div class="controllers__container--add" *ngIf="isLogged">
+    <button class="controllers__btn" (click)="crearSkillForm(contenido)">
+      <i id="skill--btn--add" class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+</div>
+<!-- End #skills -->
+
+<!-- popup -->
+<ng-template #popupContent let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title" id="modalSkl">CONFIRM DELETE</h5>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to proceed? this will delete this item
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      name="dismiss"
+      (click)="modal.close()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="eliminarSkill(sklData)"
+    >
+      Delete
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal -->
+<ng-template #contenido let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Crear Skill</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formSkill" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputSkillNombre">*Nombre</label>
+      <input
+        type="text"
+        id="inputSkillNombre"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="nombre"
+        [ngClass]="{
+          'is-invalid': nombre?.errors,
+          'is-valid': !nombre?.errors
+        }"
+      />
+      <div *ngIf="nombre?.errors">
+        <p *ngIf="nombre?.hasError('required')" class="text-danger">
+          El nombre del Skill es requerido
+        </p>
+
+        <p *ngIf="nombre?.errors?.minlength" class="text-danger">
+          El nombre del skill debe contener al menos 3 caracteres
+        </p>
+        <p *ngIf="nombre?.errors?.maxlength" class="text-danger">
+          El nombre del skill debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputSkillAvance" class="form-label">*Progreso</label>
+      <input
+        type="range"
+        min="1"
+        max="100"
+        id="inputSkillAvance"
+        class="form-range"
+        required=""
+        autofocus=""
+        formControlName="avance"
+        [ngClass]="{
+          'is-invalid': avance?.errors,
+          'is-valid': !avance?.errors
+        }"
+      />
+      <div *ngIf="avance?.errors">
+        <p *ngIf="avance?.hasError('required')" class="text-danger">
+          El progreso es requerido
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="crearSkill()"
+    >
+      Crear Skill
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal edit -->
+<ng-template #contenidoEdit let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Skill</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formSkillEdit" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputSkillNombreEdit">*Nombre</label>
+      <input
+        type="text"
+        id="inputSkillNombreEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="nombreEdit"
+        [ngClass]="{
+          'is-invalid': nombreEdit?.errors,
+          'is-valid': !nombreEdit?.errors
+        }"
+      />
+      <div *ngIf="nombreEdit?.errors">
+        <p *ngIf="nombreEdit?.hasError('required')" class="text-danger">
+          El nombre del Skill es requerido
+        </p>
+
+        <p *ngIf="nombreEdit?.errors?.minlength" class="text-danger">
+          El nombre del skill debe contener al menos 3 caracteres
+        </p>
+        <p *ngIf="nombreEdit?.errors?.maxlength" class="text-danger">
+          El nombre del skill debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputSkillAvanceEdit" class="form-label"
+        >*Editar Progreso</label
+      >
+      <input
+        type="range"
+        min="1"
+        max="100"
+        id="inputSkillAvanceEdit"
+        class="form-range"
+        required=""
+        autofocus=""
+        formControlName="avanceEdit"
+        [ngClass]="{
+          'is-invalid': avanceEdit?.errors,
+          'is-valid': !avanceEdit?.errors
+        }"
+      />
+      <div *ngIf="avanceEdit?.errors">
+        <p *ngIf="avanceEdit?.hasError('required')" class="text-danger">
+          El progreso es requerido
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="modificarSkill()"
+    >
+      Guardar Skill
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

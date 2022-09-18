@@ -1,0 +1,38 @@
+#about {
+  text-align: center;
+  position: relative;
+  padding: 75px 15px;
+  border-bottom: 1px solid #dcd9d9;
+}
+
+#about h2 {
+  color: #374054;
+}
+#about p {
+  color: #74808a;
+  margin: 0;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+.controllers__container--about {
+  position: absolute;
+  right: 5%;
+  top: 10%;
+}
+
+.controllers__btn {
+  color: #000000;
+}
+.template {
+  z-index: 999999999999999;
+}
+
+@media only screen and (max-width: 992px) {
+  #about {
+    text-align: center;
+  }
+  #about p {
+    text-align: left;
+  }
+}

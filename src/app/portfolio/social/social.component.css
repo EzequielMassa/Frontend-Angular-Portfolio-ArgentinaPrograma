@@ -1,0 +1,25 @@
+#social {
+  position: fixed;
+  left: 0;
+  top: 30%;
+  z-index: 100;
+}
+
+.social {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+.social li {
+  font-size: 0.8em;
+  list-style: none;
+}
+.social a {
+  display: block;
+  color: #74808a;
+  padding: 5px;
+}
+.social a:hover {
+  color: #889a07;
+}

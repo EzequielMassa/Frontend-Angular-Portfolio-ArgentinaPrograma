@@ -1,0 +1,336 @@
+<div id="education">
+  <h2 class="heading">Education</h2>
+
+  <div
+    #eduData
+    class="education-block"
+    *ngFor="let education of educations"
+    [attr.data-id]="education.getId()"
+    [style.background-image]="
+      education.getUrl_institucion_img() == undefined ||
+      education.getUrl_institucion_img() == null ||
+      education.getUrl_institucion_img() == ' '
+        ? 'url(' + url_education_img_default + ')'
+        : 'url(' + education.getUrl_institucion_img() + ')'
+    "
+    [style.background-repeat]="'no-repeat'"
+    [style.background-position]="'left 84% top 5px'"
+    [style.background-size]="'60px'"
+  >
+    <h3>{{ education.getInstitucion() | titlecase }}</h3>
+    <span class="education-date">
+      {{ education.getFecha_inicio() | date: "yyyy" }}-{{
+        education.getFecha_fin() | date: "yyyy"
+      }}</span
+    >
+    <h4>{{ education.getTitulo() | titlecase }}</h4>
+    <div class="controllers__container--education" *ngIf="isLogged">
+      <button
+        class="controllers__btn"
+        (click)="obtenerEdu(contenidoEdit, eduData)"
+      >
+        <i class="fa-solid fa-pen"></i>
+      </button>
+      <button
+        class="controllers__btn"
+        (click)="openEduModal(popupContent, eduData)"
+      >
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+  <div class="controllers__container--add" *ngIf="isLogged">
+    <button class="controllers__btn" (click)="crearEduForm(contenido)">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  </div>
+</div>
+
+<!-- End #education -->
+
+<!-- popup -->
+<ng-template #popupContent let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title" id="modalEdu">CONFIRM DELETE</h5>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to proceed? this will delete this item
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      name="dismiss"
+      (click)="modal.close()"
+    >
+      Cancel
+    </button>
+    <button type="button" class="btn btn-danger" (click)="eliminarEdu(eduData)">
+      Delete
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal -->
+<ng-template #contenido let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Añadir Educacion</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formEdu" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputInstitucion">*Institucion</label>
+      <input
+        type="text"
+        id="inputInstitucion"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="institucion"
+        [ngClass]="{
+          'is-invalid': institucion?.errors,
+          'is-valid': !institucion?.errors
+        }"
+      />
+      <div *ngIf="institucion?.errors">
+        <p *ngIf="institucion?.hasError('required')" class="text-danger">
+          La institucion es requerida
+        </p>
+
+        <p *ngIf="institucion?.errors?.minlength" class="text-danger">
+          La institucion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="institucion?.errors?.maxlength" class="text-danger">
+          La insitucion debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputTitulo">*Titulo</label>
+      <input
+        type="text"
+        id="inputTitulo"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="titulo"
+        [ngClass]="{
+          'is-invalid': titulo?.errors,
+          'is-valid': !titulo?.errors
+        }"
+      />
+      <div *ngIf="titulo?.errors">
+        <p *ngIf="titulo?.hasError('required')" class="text-danger">
+          El titulo es requerido
+        </p>
+
+        <p *ngIf="titulo?.errors?.minlength" class="text-danger">
+          El titulo debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="titulo?.errors?.maxlength" class="text-danger">
+          El titulo debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputFechaInicio">*Fecha de inicio</label>
+      <input
+        type="date"
+        id="inputFechaInicio"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaInicio"
+        [ngClass]="{
+          'is-invalid': fechaInicio?.errors,
+          'is-valid': !fechaInicio?.errors
+        }"
+      />
+      <div *ngIf="fechaInicio?.errors">
+        <p *ngIf="fechaInicio?.hasError('required')" class="text-danger">
+          La fecha de inicio es requrida
+        </p>
+      </div>
+      <label for="inputFechaFin">*Fecha fin</label>
+      <input
+        type="date"
+        id="inputFechaFin"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaFin"
+        [ngClass]="{
+          'is-invalid': fechaFin?.errors,
+          'is-valid': !fechaFin?.errors
+        }"
+      />
+
+      <div *ngIf="fechaFin?.errors">
+        <p *ngIf="fechaFin?.hasError('required')" class="text-danger">
+          La fecha de fin es requrida
+        </p>
+      </div>
+
+      <label for="inputUrlImgEdu">URL imagen Institucion</label>
+      <input
+        type="text"
+        id="inputUrlImgEdu"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlImgEdu"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="crearEducation()"
+    >
+      Añadir Educacion
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>
+
+<!-- modal edit -->
+
+<ng-template #contenidoEdit let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Editar Educacion</h4>
+    <button class="close" aria-label="close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="formEduEdit" class="form-signin">
+      <h6 class="h3 mb-3 font-weight-normal">El * indica que es obligatorio</h6>
+      <label for="inputInstitucionEdit">*Institucion</label>
+      <input
+        type="text"
+        id="inputInstitucionEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="institucionEdit"
+        [ngClass]="{
+          'is-invalid': institucionEdit?.errors,
+          'is-valid': !institucionEdit?.errors
+        }"
+      />
+      <div *ngIf="institucionEdit?.errors">
+        <p *ngIf="institucionEdit?.hasError('required')" class="text-danger">
+          La institucion es requerida
+        </p>
+
+        <p *ngIf="institucionEdit?.errors?.minlength" class="text-danger">
+          La institucion debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="institucionEdit?.errors?.maxlength" class="text-danger">
+          La institucion debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputTituloEdit">*Titulo</label>
+      <input
+        type="text"
+        id="inputTituloEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="tituloEdit"
+        [ngClass]="{
+          'is-invalid': tituloEdit?.errors,
+          'is-valid': !tituloEdit?.errors
+        }"
+      />
+      <div *ngIf="tituloEdit?.errors">
+        <p *ngIf="tituloEdit?.hasError('required')" class="text-danger">
+          El titulo es requerido
+        </p>
+
+        <p *ngIf="tituloEdit?.errors?.minlength" class="text-danger">
+          El titulo debe contener al menos 4 caracteres
+        </p>
+        <p *ngIf="tituloEdit?.errors?.maxlength" class="text-danger">
+          El titulo debe contener 50 caracteres como maximo
+        </p>
+      </div>
+      <label for="inputFechaInicioEdit">*Fecha de inicio</label>
+      <input
+        type="date"
+        id="inputFechaInicioEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaInicioEdit"
+        [ngClass]="{
+          'is-invalid': fechaInicioEdit?.errors,
+          'is-valid': !fechaInicioEdit?.errors
+        }"
+      />
+      <div *ngIf="fechaInicioEdit?.errors">
+        <p *ngIf="fechaInicioEdit?.hasError('required')" class="text-danger">
+          La fecha de inicio es requrida
+        </p>
+      </div>
+      <label for="inputFechaFinEdit">*Fecha fin</label>
+      <input
+        type="date"
+        id="inputFechaFinEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="fechaFinEdit"
+        [ngClass]="{
+          'is-invalid': fechaFinEdit?.errors,
+          'is-valid': !fechaFinEdit?.errors
+        }"
+      />
+
+      <div *ngIf="fechaFinEdit?.errors">
+        <p *ngIf="fechaFinEdit?.hasError('required')" class="text-danger">
+          La fecha de fin es requrida
+        </p>
+      </div>
+
+      <label for="inputUrlImgEduEdit">URL imagen Institucion</label>
+      <input
+        type="text"
+        id="inputUrlImgEduEdit"
+        class="form-control my-2"
+        placeholder=""
+        required=""
+        autofocus=""
+        formControlName="urlImgEduEdit"
+      />
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="submit"
+      class="btn btn-success"
+      name="submit"
+      (click)="modificarEducation()"
+    >
+      Guardar Educacion
+    </button>
+    <button class="btn btn-danger" name="dismiss" (click)="modal.close()">
+      Cancelar
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,69 @@
+#education {
+  position: relative;
+  padding: 50px 15px 20px 15px;
+  border-bottom: 1px solid #dcd9d9;
+  text-align: center;
+}
+#education h2 {
+  color: #374054;
+  margin-bottom: 50px;
+}
+
+.controllers__container--education {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.education-block {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto 30px auto;
+  padding: 15px;
+  border: 1px solid #dcd9d9;
+  text-align: left;
+}
+.education-block h3 {
+  font-weight: 500;
+  float: left;
+  margin: 0;
+  color: #374054;
+}
+.education-block span {
+  color: #74808a;
+  float: right;
+}
+.education-block h4 {
+  color: #74808a;
+  clear: both;
+  font-weight: 500;
+  margin: 0 0 15px 0;
+}
+.education-block p,
+.education-block ul {
+  margin: 0;
+  color: #74808a;
+  font-size: 0.7em;
+}
+.education-block ul {
+  padding: 0 0 0 15px;
+}
+
+@media only screen and (max-width: 768px) {
+  .education-block h3,
+  .education-block span {
+    float: none;
+  }
+  .education-block {
+    background-size: 50px !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .education-block {
+    background-image: none !important;
+  }
+  .education-block h3,
+  .education-block h4 {
+    font-size: 1em;
+  }
+}
